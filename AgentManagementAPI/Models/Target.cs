@@ -10,8 +10,10 @@ namespace AgentManagementAPI.Models
 
         public string Role { get; set; }
 
-        public Point LocationTarget = new Point();
+        public Location LocationTarget { get; set; }
 
         public StatusTarget StatusTarget { get; set; }
+
+        public Direction DirectionTarget { get; set; }
     }
 }

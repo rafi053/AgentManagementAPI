@@ -14,10 +14,10 @@ namespace AgentManagementAPI.Models
 
         public string Nickname { get; set; }
 
-        public Point LocationAgent = new Point();
+        public Location LocationAgent { get; set; }
         public StatusAgent StatusAgent { get; set; }
 
-
+        public Direction DirectionAgent { get; set; }
 
 
     }

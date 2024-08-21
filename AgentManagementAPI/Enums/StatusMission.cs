@@ -3,7 +3,7 @@
     public enum StatusMission
     {
        Offer,
-       MitzvahForTheTask,
+       Assigned,
        Finished
     }
 }
