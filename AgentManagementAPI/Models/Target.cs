@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace AgentManagementAPI.Models
 {
-    public class Target
+    public class Target : Entity
     {
  
         public StatusTarget StatusTarget { get; set; }

@@ -12,7 +12,7 @@ using AgentManagementAPI.Utils;
 
 namespace AgentManagementAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class MissionsController : ControllerBase
     {
@@ -73,36 +73,14 @@ namespace AgentManagementAPI.Controllers
             return NoContent();
         }
 
-        [HttpPut("update")]
-        public async Task<IActionResult> ControlleMission(StatusMission assignToTask)
-        {
-            var statusMissions = GetAllMissions().FindAsync(assignToTask);
-            statusMissions.
-            if (id != mission.Id)
-            {
-                return BadRequest();
-            }
+        //    [HttpPut("update")]
+        //    public async Task<IActionResult> ControlleMission(StatusMission assignToTask)
+        //    {
+        //        List<Mission> statusMissions = await _dbContextAPI.Missions.Where(m => m.StatusMission == "AssignToTask").ToListAsync();
 
-            _dbContextAPI.Entry(mission).State = EntityState.Modified;
 
-            try
-            {
-                await _dbContextAPI.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!Exists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+        //        return NoContent();
+        //    }
 
         private bool Exists(int id)
         {
@@ -110,23 +88,23 @@ namespace AgentManagementAPI.Controllers
         }
 
 
-        // יצירת משימה
-        [HttpPost]
-        [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> CreateMissions(Mission mission)
-        {
-            mission.StatusTarget = StatusTarget.Live;
-            _dbContextAPI.Targets.Add(target);
-            await _dbContextAPI.SaveChangesAsync();
+        //    // יצירת משימה
+        //    [HttpPost]
+        //    [Produces("application/json")]
+        //    [ProducesResponseType(StatusCodes.Status201Created)]
+        //    public async Task<IActionResult> CreateMissions(Mission mission)
+        //    {
+        //        mission.StatusTarget = StatusTarget.Live;
+        //        _dbContextAPI.Targets.Add(target);
+        //        await _dbContextAPI.SaveChangesAsync();
 
-            return StatusCode(
-           StatusCodes.Status201Created,
-           new { targetId = target.Id });
-        }
+        //        return StatusCode(
+        //       StatusCodes.Status201Created,
+        //       new { targetId = target.Id });
+        //    }
 
-        [HttpPost("update")]
-        [Produces("application/json")]
+        //    [HttpPost("update")]
+        //    [Produces("application/json")]
     }
 }
 

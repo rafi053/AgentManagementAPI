@@ -8,7 +8,7 @@ using AgentManagementAPI.Enums;
 
 namespace AgentManagementAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TargetsController : ControllerBase
     {
@@ -67,19 +67,15 @@ namespace AgentManagementAPI.Controllers
 
             }
 
-            target.LocationTarget.X = x;
-            target.LocationTarget.Y = y;
+            target.LocationX = x;
+            target.LocationY = y;
             return StatusCode(
                 StatusCodes.Status200OK,
                 new { message = "Position success." }
             );
 
         }
-        public void G() {
-            Agent agent = new Agent ();
-            agent.
-        }
-
+        
         // קביעת מיקום חדש
         [HttpPut("{id}/move")]
         public async Task<IActionResult> DirectionPosition(int id, Target target, string directionT)
@@ -95,40 +91,41 @@ namespace AgentManagementAPI.Controllers
                 return BadRequest("Invalid direction value.");
             }
 
-            if (target.LocationTarget == null)
+            if (target.LocationX == null  && target.LocationY == null)
             {
-                target.LocationTarget = new Location();
+                target.LocationX = 1001;  target.LocationY = 1001;
+                   
             }
 
             switch (direction)
             {
                 case Direction.nw:
-                    target.LocationTarget.X -= 1;
-                    target.LocationTarget.Y += 1;
+                    target.LocationX -= 1;
+                    target.LocationY += 1;
                     break;
                 case Direction.n:
-                    target.LocationTarget.Y += 1;
+                    target.LocationY += 1;
                     break;
                 case Direction.ne:
-                    target.LocationTarget.X += 1;
-                    target.LocationTarget.Y += 1;
+                    target.LocationX += 1;
+                    target.LocationY += 1;
                     break;
                 case Direction.w:
-                    target.LocationTarget.X -= 1;
+                    target.LocationX -= 1;
                     break;
                 case Direction.e:
-                    target.LocationTarget.X += 1;
+                    target.LocationY += 1;
                     break;
                 case Direction.sw:
-                    target.LocationTarget.X -= 1;
-                    target.LocationTarget.Y -= 1;
+                    target.LocationX -= 1;
+                    target.LocationY -= 1;
                     break;
                 case Direction.s:
-                    target.LocationTarget.Y -= 1;
+                    target.LocationX -= 1;
                     break;
                 case Direction.se:
-                    target.LocationTarget.X += 1;
-                    target.LocationTarget.Y -= 1;
+                    target.LocationX += 1;
+                    target.LocationY -= 1;
                     break;
             }
 

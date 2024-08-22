@@ -12,7 +12,7 @@ using AgentManagementAPI.Utils;
 
 namespace AgentManagementAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AgentController : ControllerBase 
     {
@@ -67,8 +67,8 @@ namespace AgentManagementAPI.Controllers
 
             }
 
-            agent.LocationAgent.X = x;
-            agent.LocationAgent.Y = y;
+            agent.LocationX = x;
+            agent.LocationY = y;
            
             return StatusCode(
                 StatusCodes.Status200OK,

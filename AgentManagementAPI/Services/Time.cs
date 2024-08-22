@@ -8,13 +8,13 @@ namespace AgentManagementAPI.Services
        
 
         //בדיקת המרחק בין הסוכן למטרה
-        public static double GetDistance(Location target, Location agent)
+        public static double GetDistance(int targetX, int targetY, int agentX, int agentY)
         {
-            int x1 = target.X;
-            int y1 = target.Y;
+            int x1 = targetX;
+            int y1 = targetY;
 
-            int x2 = agent.X;
-            int y2 = agent.Y;
+            int x2 = agentX;
+            int y2 = agentY;
 
             double distance = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
 
@@ -29,7 +29,7 @@ namespace AgentManagementAPI.Services
                 return mission;
             }
 
-            double distance = GetDistance(mission.Agent.LocationAgent, mission.Target.LocationTarget);
+            double distance = GetDistance(mission.Target.LocationX, mission.Target.LocationY, mission.Agent.LocationX, mission.Agent.LocationY);
             mission.TimeLeft = (distance / 5);
 
             return mission;
@@ -43,10 +43,24 @@ namespace AgentManagementAPI.Services
                 return mission;
             }
 
-            double distance = GetDistance(mission.Agent.LocationAgent, mission.Target.LocationTarget);
+            double distance = GetDistance(mission.Target.LocationX, mission.Target.LocationY, mission.Agent.LocationX, mission.Agent.LocationY);
             double time = (distance / 5);
             mission.DurationTask += time;
             return mission;
         }
+
+        //public Mission TaskChecker()
+        //{
+        //    if (mission.StatusMission.ToString() != "MitzvahForTheTask")
+        //    {
+        //        return mission;
+        //    }
+
+        //    double distance = GetDistance(mission.Agent.LocationAgent, mission.Target.LocationTarget);
+        //    double time = (distance / 5);
+        //    mission.DurationTask += time;
+        //    return mission;
+        //}
+        
     }
 }
