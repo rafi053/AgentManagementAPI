@@ -75,6 +75,10 @@ namespace AgentManagementAPI.Controllers
             );
 
         }
+        public void G() {
+            Agent agent = new Agent ();
+            agent.
+        }
 
         // קביעת מיקום חדש
         [HttpPut("{id}/move")]
