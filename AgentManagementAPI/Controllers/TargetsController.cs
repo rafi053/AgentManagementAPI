@@ -13,12 +13,12 @@ namespace AgentManagementAPI.Controllers
     public class TargetsController : ControllerBase
     {
         public DbContextAPI _dbContextAPI;
-        public TargetsController(DbContextAPI dbContextAPI) 
+        public TargetsController(DbContextAPI dbContextAPI)
         {
             _dbContextAPI = dbContextAPI;
         }
 
-        
+
 
 
         // יצירת מטרה
@@ -78,34 +78,65 @@ namespace AgentManagementAPI.Controllers
 
         // קביעת מיקום חדש
         [HttpPut("{id}/move")]
-        public async Task<IActionResult> DirectionPosition(int id, Target target, Direction direction)
+        public async Task<IActionResult> DirectionPosition(int id, Target target, Direction directionT)
         {
             target = await this._dbContextAPI.Targets.FindAsync(id);
-
-            int status = StatusCodes.Status404NotFound;
-            if (target == null) return StatusCode(status, HttpUtils.Response(status, "target not found"));
-            if (target.StatusTarget == StatusTarget.Eliminated)
+            if (target == null)
             {
-                status = StatusCodes.Status400BadRequest;
-                return StatusCode(
-                    status,
-                    new
-                    {
-                        success = false,
-                        error = "Cannot Direction Position an target that hasalready Eliminated."
-                    }
-                );
-
+                return NotFound();
             }
 
-            target.DirectionTarget = direction;
-            return StatusCode(
-                StatusCodes.Status200OK,
-                new { message = "Direction success." }
-            );
+            if (!Enum.TryParse<Direction>(directionT, true, out var direction))
+            {
+                return BadRequest("Invalid direction value.");
+            }
 
+            if (target.LocationTarget == null)
+            {
+                target.LocationTarget = new Location();
+            }
+
+            switch (direction)
+            {
+                case Direction.nw:
+                    target.LocationTarget.X -= 1;
+                    target.LocationTarget.Y += 1;
+                    break;
+                case Direction.n:
+                    target.LocationTarget.Y += 1;
+                    break;
+                case Direction.ne:
+                    target.LocationTarget.X += 1;
+                    target.LocationTarget.Y += 1;
+                    break;
+                case Direction.w:
+                    target.LocationTarget.X -= 1;
+                    break;
+                case Direction.e:
+                    target.LocationTarget.X += 1;
+                    break;
+                case Direction.sw:
+                    target.LocationTarget.X -= 1;
+                    target.LocationTarget.Y -= 1;
+                    break;
+                case Direction.s:
+                    target.LocationTarget.Y -= 1;
+                    break;
+                case Direction.se:
+                    target.LocationTarget.X += 1;
+                    target.LocationTarget.Y -= 1;
+                    break;
+            }
+
+            _dbContextAPI.SaveChanges();
+            return Ok(target);
         }
 
-
+        private bool TargetExists(int id)
+        {
+            return _dbContextAPI.Targets.Any(e => e.Id == id);
+        }
     }
 }
+
+   
