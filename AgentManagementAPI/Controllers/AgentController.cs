@@ -14,7 +14,7 @@ namespace AgentManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AgentController : ControllerBase
+    public class AgentController : ControllerBase 
     {
         private readonly DbContextAPI _dbContextAPI;
 
@@ -28,7 +28,7 @@ namespace AgentManagementAPI.Controllers
         [HttpPost]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> CreateAgent(Agent agent)
+        public async Task<IActionResult> CreateEntity(Agent agent)
         {
             _dbContextAPI.Agents.Add(agent);
             await _dbContextAPI.SaveChangesAsync();
@@ -40,7 +40,7 @@ namespace AgentManagementAPI.Controllers
 
         // הצג את כל הסוכנים
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Agent>>> GetAllAgents()
+        public async Task<ActionResult<IEnumerable<Agent>>> GetAllEntities()
         {
             return await _dbContextAPI.Agents.ToListAsync();
         }
