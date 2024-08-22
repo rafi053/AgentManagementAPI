@@ -46,92 +46,92 @@ namespace AgentManagementAPI.Controllers
 
 
         // קביעת מיקום התחלתי
-        [HttpPut("{id}/pin")]
-        public async Task<IActionResult> StartingPosition(int id, Target target, int x, int y)
-        {
-            target = await this._dbContextAPI.Targets.FindAsync(id);
+        //[HttpPut("{id}/pin")]
+        //public async Task<IActionResult> StartingPosition(int id, Target target, int x, int y)
+        //{
+        //    target = await this._dbContextAPI.Targets.FindAsync(id);
 
-            int status = StatusCodes.Status404NotFound;
-            if (target == null) return StatusCode(status, HttpUtils.Response(status, "target not found"));
-            if (target.StatusTarget == StatusTarget.Eliminated)
-            {
-                status = StatusCodes.Status400BadRequest;
-                return StatusCode(
-                    status,
-                    new
-                    {
-                        success = false,
-                        error = "Cannot Starting Position an target that hasalready Eliminated."
-                    }
-                );
+        //    int status = StatusCodes.Status404NotFound;
+        //    if (target == null) return StatusCode(status, HttpUtils.Response(status, "target not found"));
+        //    if (target.StatusTarget == StatusTarget.Eliminated)
+        //    {
+        //        status = StatusCodes.Status400BadRequest;
+        //        return StatusCode(
+        //            status,
+        //            new
+        //            {
+        //                success = false,
+        //                error = "Cannot Starting Position an target that hasalready Eliminated."
+        //            }
+        //        );
 
-            }
+        //    }
 
-            target.LocationX = x;
-            target.LocationY = y;
-            return StatusCode(
-                StatusCodes.Status200OK,
-                new { message = "Position success." }
-            );
+        //    target.LocationX = x;
+        //    target.LocationY = y;
+        //    return StatusCode(
+        //        StatusCodes.Status200OK,
+        //        new { message = "Position success." }
+        //    );
 
-        }
+        //}
         
-        // קביעת מיקום חדש
-        [HttpPut("{id}/move")]
-        public async Task<IActionResult> DirectionPosition(int id, Target target, string directionT)
-        {
-            target = await this._dbContextAPI.Targets.FindAsync(id);
-            if (target == null)
-            {
-                return NotFound();
-            }
+        //// קביעת מיקום חדש
+        //[HttpPut("{id}/move")]
+        //public async Task<IActionResult> DirectionPosition(int id, Target target, string directionT)
+        //{
+        //    target = await this._dbContextAPI.Targets.FindAsync(id);
+        //    if (target == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (!Enum.TryParse<Direction>(directionT, true, out var direction))
-            {
-                return BadRequest("Invalid direction value.");
-            }
+        //    if (!Enum.TryParse<Direction>(directionT, true, out var direction))
+        //    {
+        //        return BadRequest("Invalid direction value.");
+        //    }
 
-            if (target.LocationX == null  && target.LocationY == null)
-            {
-                target.LocationX = 1001;  target.LocationY = 1001;
+        //    if (target.LocationX == null  && target.LocationY == null)
+        //    {
+        //        target.LocationX = 1001;  target.LocationY = 1001;
                    
-            }
+        //    }
 
-            switch (direction)
-            {
-                case Direction.nw:
-                    target.LocationX -= 1;
-                    target.LocationY += 1;
-                    break;
-                case Direction.n:
-                    target.LocationY += 1;
-                    break;
-                case Direction.ne:
-                    target.LocationX += 1;
-                    target.LocationY += 1;
-                    break;
-                case Direction.w:
-                    target.LocationX -= 1;
-                    break;
-                case Direction.e:
-                    target.LocationY += 1;
-                    break;
-                case Direction.sw:
-                    target.LocationX -= 1;
-                    target.LocationY -= 1;
-                    break;
-                case Direction.s:
-                    target.LocationX -= 1;
-                    break;
-                case Direction.se:
-                    target.LocationX += 1;
-                    target.LocationY -= 1;
-                    break;
-            }
+        //    switch (direction)
+        //    {
+        //        case Direction.nw:
+        //            target.LocationX -= 1;
+        //            target.LocationY += 1;
+        //            break;
+        //        case Direction.n:
+        //            target.LocationY += 1;
+        //            break;
+        //        case Direction.ne:
+        //            target.LocationX += 1;
+        //            target.LocationY += 1;
+        //            break;
+        //        case Direction.w:
+        //            target.LocationX -= 1;
+        //            break;
+        //        case Direction.e:
+        //            target.LocationY += 1;
+        //            break;
+        //        case Direction.sw:
+        //            target.LocationX -= 1;
+        //            target.LocationY -= 1;
+        //            break;
+        //        case Direction.s:
+        //            target.LocationX -= 1;
+        //            break;
+        //        case Direction.se:
+        //            target.LocationX += 1;
+        //            target.LocationY -= 1;
+        //            break;
+        //    }
 
-            _dbContextAPI.SaveChanges();
-            return Ok(target);
-        }
+        //    _dbContextAPI.SaveChanges();
+        //    return Ok(target);
+        //}
 
         private bool TargetExists(int id)
         {

@@ -14,11 +14,11 @@ namespace AgentManagementAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class AgentController : ControllerBase 
+    public class AgentsController : ControllerBase 
     {
         private readonly DbContextAPI _dbContextAPI;
 
-        public AgentController(DbContextAPI dbContextAPI)
+        public AgentsController(DbContextAPI dbContextAPI)
         {
             _dbContextAPI = dbContextAPI;
         }

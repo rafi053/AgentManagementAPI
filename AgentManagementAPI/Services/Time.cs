@@ -22,32 +22,22 @@ namespace AgentManagementAPI.Services
         }
 
         //חישוב זמן שנותר 
-        public Mission GetTimeLeft(Mission mission)
-        {
-            if (mission.StatusMission.ToString() != "AssignToTask")
-            {
-                return mission;
-            }
 
-            double distance = GetDistance(mission.Target.LocationX, mission.Target.LocationY, mission.Agent.LocationX, mission.Agent.LocationY);
-            mission.TimeLeft = (distance / 5);
 
-            return mission;
-        }
 
         //חישוב סופי של המשימה
-        public Mission GetTimeMission(Mission mission)
-        {
-            if (mission.StatusMission.ToString() != "MitzvahForTheTask")
-            {
-                return mission;
-            }
+        //public Mission GetTimeMission(Mission mission)
+        //{
+        //    if (mission.StatusMission.ToString() != "MitzvahForTheTask")
+        //    {
+        //        return mission;
+        //    }
 
-            double distance = GetDistance(mission.Target.LocationX, mission.Target.LocationY, mission.Agent.LocationX, mission.Agent.LocationY);
-            double time = (distance / 5);
-            mission.DurationTask += time;
-            return mission;
-        }
+        //    double distance = GetDistance(mission.Target.LocationX, mission.Target.LocationY, mission.Agent.LocationX, mission.Agent.LocationY);
+        //    double time = (distance / 5);
+        //    mission.DurationTask += time;
+        //    return mission;
+        //}
 
         //public Mission TaskChecker()
         //{
