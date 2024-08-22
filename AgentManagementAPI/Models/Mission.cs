@@ -1,5 +1,6 @@
 ﻿using AgentManagementAPI.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgentManagementAPI.Models
 {
@@ -7,11 +8,13 @@ namespace AgentManagementAPI.Models
     {
         [Key]
         public int Id { get; set; }
-        public Agent Agent { get; set; }
+        [NotMapped]
+        public Agent? Agent { get; set; }
 
         public int AgentID { get; set; }
 
-        public Target Target { get; set; }
+        [NotMapped]
+        public Target? Target { get; set; }
 
         public int TargetID { get; set; }
 
@@ -19,6 +22,6 @@ namespace AgentManagementAPI.Models
 
         public double? TimeLeft { get; set; }
 
-        public StatusMission StatusMission { get; set; }
+        public StatusMission? StatusMission { get; set; }
     }
 }

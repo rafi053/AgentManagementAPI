@@ -13,10 +13,10 @@ namespace AgentManagementAPI.Models
         public string Name { get; set; }
 
         [Range(0, 1000, ErrorMessage = "Please enter a number between 1 and 1000")]
-        public int LocationX { get; set; }
+        public int LocationX { get; set; } = 1001;
 
         [Range(0, 1000, ErrorMessage = "Please enter a number between 1 and 1000")]
-        public int LocationY { get; set; }
+        public int LocationY { get; set; } = 1001;
        
     }
 }

@@ -7,9 +7,9 @@ namespace AgentManagementAPI.Models
 {
     public class Agent : Entity
     {
-        public StatusAgent StatusAgent { get; set; }
+        public StatusAgent? StatusAgent { get; set; }
 
-        public Direction DirectionAgent { get; set; }
+        public Direction? DirectionAgent { get; set; }
     }
    
 }

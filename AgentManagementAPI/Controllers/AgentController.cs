@@ -35,7 +35,7 @@ namespace AgentManagementAPI.Controllers
 
             return StatusCode(
            StatusCodes.Status201Created,
-           new { agentId = agent.Id });
+           new { agent = agent });
         }
 
         // הצג את כל הסוכנים

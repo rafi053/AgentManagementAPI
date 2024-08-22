@@ -6,8 +6,8 @@ namespace AgentManagementAPI.Models
     public class Target : Entity
     {
  
-        public StatusTarget StatusTarget { get; set; }
+        public StatusTarget? StatusTarget { get; set; }
 
-        public Direction DirectionTarget { get; set; }
+        public Direction? DirectionTarget { get; set; }
     }
 }

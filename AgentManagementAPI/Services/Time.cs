@@ -24,7 +24,7 @@ namespace AgentManagementAPI.Services
         //חישוב זמן שנותר 
         public Mission GetTimeLeft(Mission mission)
         {
-            if (mission.StatusMission.ToString() != "MitzvahForTheTask")
+            if (mission.StatusMission.ToString() != "AssignToTask")
             {
                 return mission;
             }
