@@ -78,7 +78,7 @@ namespace AgentManagementAPI.Controllers
 
         // קביעת מיקום חדש
         [HttpPut("{id}/move")]
-        public async Task<IActionResult> DirectionPosition(int id, Target target, Direction directionT)
+        public async Task<IActionResult> DirectionPosition(int id, Target target, string directionT)
         {
             target = await this._dbContextAPI.Targets.FindAsync(id);
             if (target == null)
