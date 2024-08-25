@@ -30,6 +30,7 @@ namespace AgentManagementAPI.Controllers
             _dbContextAPI.Targets.Add(target);
             await _dbContextAPI.SaveChangesAsync();
 
+
             return StatusCode(
                StatusCodes.Status200OK,
                new { Id = target.Id });

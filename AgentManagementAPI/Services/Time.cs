@@ -1,10 +1,20 @@
 ﻿using AgentManagementAPI.Data;
+using AgentManagementAPI.Enums;
 using AgentManagementAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
+using System.Reflection;
 
 namespace AgentManagementAPI.Services
 {
     public class Time
     {
+        private readonly DbContextAPI _dbContextAPI;
+        public Time(DbContextAPI dbContextAPI)
+        { 
+            _dbContextAPI = dbContextAPI;
+        }
        
 
         //בדיקת המרחק בין הסוכן למטרה
@@ -22,9 +32,43 @@ namespace AgentManagementAPI.Services
         }
 
         //חישוב זמן שנותר 
+        public async Task<ActionResult<IEnumerable<Target>>> TimeMission(Agent agent)
+        {
+            var targets = await _dbContextAPI.Targets.ToListAsync();
+            foreach (var target in targets)
+            {
+                var distance = GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
+                if (distance < 200)
+                {
+                    await CreateMissionAsync(agent, target);
+                    return (new List<Target> { target });
+                }
+            }
+            return (new List<Target>());
+        }
+
+        // יצירת משימה
+        private async Task CreateMissionAsync(Agent agent, Target target)
+        {
+            Mission mission = new Mission
+            {
+                AgentID = agent.Id,
+                TargetID = target.Id,
+                DurationTask = double.MinValue,
+                TimeLeft = double.MaxValue,
+                StatusMission = StatusMission.Offer,
+            };
+            _dbContextAPI.Missions.Add(mission);
+            await _dbContextAPI.SaveChangesAsync();
+        }
+
+
+        
 
 
 
+
+        
         //חישוב סופי של המשימה
         //public Mission GetTimeMission(Mission mission)
         //{
@@ -51,6 +95,6 @@ namespace AgentManagementAPI.Services
         //    mission.DurationTask += time;
         //    return mission;
         //}
-        
+
     }
 }

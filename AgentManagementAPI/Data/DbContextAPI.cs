@@ -1,5 +1,6 @@
 ﻿using AgentManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace AgentManagementAPI.Data
 {
@@ -10,7 +11,7 @@ namespace AgentManagementAPI.Data
         public DbSet<Agent> Agents { get; set; }
         public DbSet<Target> Targets { get; set; }
         public DbSet<Mission> Missions { get; set; }
-        public DbSet<Entity> Entities { get; set; }
+        public DbSet<Login> Logins { get; set; }
 
 
 

@@ -19,10 +19,12 @@ namespace AgentManagementAPI.Controllers
     [ApiController]
     public class MissionsController : ControllerBase
     {
-        public DbContextAPI _dbContextAPI;
-        public MissionsController(DbContextAPI dbContextAPI)
+        private readonly DbContextAPI _dbContextAPI;
+        private readonly AgentsController _agentsController;
+        public MissionsController(DbContextAPI dbContextAPI, AgentsController agentsController)
         {
             _dbContextAPI = dbContextAPI;
+            _agentsController = agentsController;
         }
 
 
@@ -95,29 +97,65 @@ namespace AgentManagementAPI.Controllers
             status = StatusCodes.Status200OK;
             return StatusCode(status, HttpUtils.Response(status, new { mission = mission }));
         }
+
+
         // עדכון מצב משימות
         [HttpPost("update")]
         public async Task<IActionResult> UpdateTimeLeft()
         {
             int status = StatusCodes.Status200OK;
             var missions = await _dbContextAPI.Missions.ToListAsync();
-            foreach (Mission mission in missions)
+
+            foreach (var mission in missions)
             {
-                Agent? agent = await _dbContextAPI.Agents.FirstOrDefaultAsync(a => a.Id == mission.AgentID);
-                Target? target = await _dbContextAPI.Targets.FirstOrDefaultAsync(t => t.Id == mission.TargetID);
-                if (agent == null || target == null)
+                if (mission.StatusMission == StatusMission.Assigned)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, "Agent or Target not found for mission");
+                    var agent = await _dbContextAPI.Agents.FirstOrDefaultAsync(a => a.Id == mission.AgentID);
+                    var target = await _dbContextAPI.Targets.FirstOrDefaultAsync(t => t.Id == mission.TargetID);
+
+                    if (agent == null || target == null)
+                    {
+                        return StatusCode(StatusCodes.Status404NotFound, "Agent or Target not found for mission");
+                    }
+
+                    double distance = Time.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
+                    var moveDirection = Time.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY).ToString();
+
+                    mission.TimeLeft = distance;
+
+                    if (string.IsNullOrEmpty(moveDirection))
+                    {
+                        agent.StatusAgent = StatusAgent.IinActivity;
+                        target.StatusTarget = StatusTarget.Eliminated;
+                        target.LocationX = -1;
+                        target.LocationY =-1;
+
+                        mission.StatusMission = StatusMission.Finished;
+
+                        _dbContextAPI.Agents.Update(agent);
+                        _dbContextAPI.Targets.Update(target);
+                        _dbContextAPI.Missions.Update(mission);
+                    }
+                    else
+                    {
+
+                        _agentsController.DirectionPosition(agent.Id, agent.Direction.ToString());
+
+                        _dbContextAPI.Agents.Update(agent);
+                    }
+
+                    await _dbContextAPI.SaveChangesAsync();
                 }
-                mission.TimeLeft = Time.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
-                await this._dbContextAPI.SaveChangesAsync();
             }
+
             return StatusCode(
                 status,
                 HttpUtils.Response(status, new { missions = missions })
-                );
+            );
         }
 
+       
+      
 
     }
 }

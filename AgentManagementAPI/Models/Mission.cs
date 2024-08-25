@@ -22,6 +22,9 @@ namespace AgentManagementAPI.Models
 
         public double? TimeLeft { get; set; }
 
+        
+
+
         public StatusMission? StatusMission { get; set; }
     }
 }

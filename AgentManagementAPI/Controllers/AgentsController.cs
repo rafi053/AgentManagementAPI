@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using AgentManagementAPI.Data;
 using AgentManagementAPI.Enums;
 using AgentManagementAPI.Utils;
+using AgentManagementAPI.Services;
 
 namespace AgentManagementAPI.Controllers
 {
@@ -17,10 +18,13 @@ namespace AgentManagementAPI.Controllers
     public class AgentsController : ControllerBase 
     {
         private readonly DbContextAPI _dbContextAPI;
+       
 
-        public AgentsController(DbContextAPI dbContextAPI)
+
+        public AgentsController(DbContextAPI dbContextAPI, Time time)
         {
             _dbContextAPI = dbContextAPI;
+           
         }
 
 
@@ -32,7 +36,7 @@ namespace AgentManagementAPI.Controllers
         {
             _dbContextAPI.Agents.Add(agent);
             await _dbContextAPI.SaveChangesAsync();
-
+            
             return StatusCode(
                StatusCodes.Status200OK,
                new { Id = agent.Id });
