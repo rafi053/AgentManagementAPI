@@ -48,25 +48,24 @@ namespace AgentManagementAPI.Controllers
             return tokenString;
         }
 
-        //[HttpPost]
-        //public IActionResult Login(LoginObject loginObject)
-        //{
-        //    if (loginObject.UserName == "admin" &&
-        //        loginObject.Password == "123456")
-        //    {
+        [HttpPost]
+        public IActionResult Login(LoginObject loginObject)
+        {
+            if (loginObject.Id == "SimulationServer" || loginObject.Id == "MVCServer")
+            {
 
-        //        // getting the user (requester) IP
-        //        string userIP = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+                // getting the user (requester) IP
+                string userIP = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
 
-        //        return StatusCode(200
-        //            , new { token = GenerateToken(userIP) }
-        //            );
-        //    }
-        //    return StatusCode(StatusCodes.Status401Unauthorized,
-        //            new { error = "invalid credentials" });
+                return StatusCode(200
+                    , new { token = GenerateToken(userIP) }
+                    );
+            }
+            return StatusCode(StatusCodes.Status401Unauthorized,
+                    new { error = "invalid credentials" });
 
 
-        //}
+        }
     }
 
 }
