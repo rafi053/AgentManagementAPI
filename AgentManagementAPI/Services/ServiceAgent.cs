@@ -32,19 +32,26 @@ namespace AgentManagementAPI.Services
         }
 
         //חישוב זמן שנותר 
-        public  async Task<ActionResult<IEnumerable<Target>>> TimeMission(Agent agent)
+         public async Task<ActionResult<IEnumerable<Target>>> TimeMission(Agent agent)
         {
             var targets = await _dbContextAPI.Targets.ToListAsync();
             foreach (var target in targets)
             {
-                var distance = GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
-                if (distance < 200)
+                
+                if (target.LocationX.HasValue && target.LocationY.HasValue &&
+                    agent.LocationX.HasValue && agent.LocationY.HasValue)
                 {
-                    await CreateMission(agent, target);
-                    return (new List<Target> { target });
+                    double distance = GetDistance(target.LocationX.Value, target.LocationY.Value,
+                                                  agent.LocationX.Value, agent.LocationY.Value);
+                    if (distance < 200)
+                    {
+                        await CreateMission(agent, target);
+                        await _dbContextAPI.SaveChangesAsync();
+                        return new List<Target> { target };
+                    }
                 }
             }
-            return (new List<Target>());
+            return new List<Target>();
         }
 
         // יצירת משימה
@@ -54,47 +61,44 @@ namespace AgentManagementAPI.Services
             {
                 AgentID = agent.Id,
                 TargetID = target.Id,
-                DurationTask = double.MinValue,
-                TimeLeft = double.MaxValue,
-                StatusMission = StatusMission.Offer,
+                DurationTask = 0,
+                TimeLeft =  GetTimeMission(agent, target),
+                StatusMission = StatusMission.Offer.ToString(),
             };
             _dbContextAPI.Missions.Add(mission);
             await _dbContextAPI.SaveChangesAsync();
         }
 
 
+
+
+
+
+
+
+        // חישוב סופי של המשימה
+        private double GetTimeMission(Agent agent, Target target)
+        {
+            if (target.LocationX.HasValue && target.LocationY.HasValue &&
+                agent.LocationX.HasValue && agent.LocationY.HasValue)
+            {
+                double distance = GetDistance(target.LocationX.Value, target.LocationY.Value,
+                                              agent.LocationX.Value, agent.LocationY.Value);
+                double time = distance / 5; 
+                return time;
+            }
+            else
+            {
+                return double.MaxValue; 
+            }
+        }
+
+       
+
         
 
-
-
-
         
-        //חישוב סופי של המשימה
-        //public Mission GetTimeMission(Mission mission)
-        //{
-        //    if (mission.StatusMission.ToString() != "MitzvahForTheTask")
-        //    {
-        //        return mission;
-        //    }
-
-        //    double distance = GetDistance(mission.Target.LocationX, mission.Target.LocationY, mission.Agent.LocationX, mission.Agent.LocationY);
-        //    double time = (distance / 5);
-        //    mission.DurationTask += time;
-        //    return mission;
-        //}
-
-        //public Mission TaskChecker()
-        //{
-        //    if (mission.StatusMission.ToString() != "MitzvahForTheTask")
-        //    {
-        //        return mission;
-        //    }
-
-        //    double distance = GetDistance(mission.Agent.LocationAgent, mission.Target.LocationTarget);
-        //    double time = (distance / 5);
-        //    mission.DurationTask += time;
-        //    return mission;
-        //}
+       
 
     }
 }

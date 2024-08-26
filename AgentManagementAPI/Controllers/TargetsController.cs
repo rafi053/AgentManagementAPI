@@ -72,6 +72,7 @@ namespace AgentManagementAPI.Controllers
             target.LocationX = position.X;
             target.LocationY = position.Y;
             _dbContextAPI.Update(target);
+            await _serviceTrget.TimeMission(target);
             await _dbContextAPI.SaveChangesAsync();
             return Ok();
         }
@@ -98,8 +99,8 @@ namespace AgentManagementAPI.Controllers
             int maxX = 1000;
             int maxY = 1000;
 
-            int currentX = target.LocationX;
-            int currentY = target.LocationY;
+            int? currentX = target.LocationX;
+            int? currentY = target.LocationY;
 
             switch (direction)
             {

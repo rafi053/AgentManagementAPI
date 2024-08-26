@@ -28,20 +28,27 @@ namespace AgentManagementAPI.Services
             return distance;
         }
 
+        
         //חישוב זמן שנותר 
-        public async Task<ActionResult<IEnumerable<Target>>> TimeMission(Target target)
+        public async Task<ActionResult<IEnumerable<Agent>>> TimeMission(Target target)
         {
             var agents = await _dbContextAPI.Agents.ToListAsync();
             foreach (var agent in agents)
             {
-                var distance = GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
-                if (distance < 200)
+                if (agent.LocationX.HasValue && agent.LocationY.HasValue &&
+                    agent.LocationX.HasValue && agent.LocationY.HasValue)
                 {
-                    await CreateMission(agent, target);
-                    return (new List<Target> { target });
+                    double distance = GetDistance(agent.LocationX.Value, agent.LocationY.Value,
+                                                  agent.LocationX.Value, agent.LocationY.Value);
+                    if (distance < 200)
+                    {
+                        await CreateMission(agent, target);
+                        await _dbContextAPI.SaveChangesAsync();
+                        return new List<Agent> { agent };
+                    }
                 }
             }
-            return (new List<Target>());
+            return new List<Agent>();
         }
 
         // יצירת משימה
@@ -53,7 +60,7 @@ namespace AgentManagementAPI.Services
                 TargetID = target.Id,
                 DurationTask = double.MinValue,
                 TimeLeft = double.MaxValue,
-                StatusMission = StatusMission.Offer,
+                StatusMission = StatusMission.Offer.ToString(),
             };
             _dbContextAPI.Missions.Add(mission);
             await _dbContextAPI.SaveChangesAsync();

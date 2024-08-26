@@ -61,6 +61,7 @@ namespace AgentManagementAPI.Controllers
                 return NotFound();
             }
 
+
             return agent;
         }
 
@@ -75,7 +76,9 @@ namespace AgentManagementAPI.Controllers
             agent.LocationX = position.X;
             agent.LocationY = position.Y;
             _dbContextAPI.Update(agent);
+            await _serviceAgent.TimeMission(agent);
             await _dbContextAPI.SaveChangesAsync();
+           
             return Ok();
         }
 
@@ -118,8 +121,8 @@ namespace AgentManagementAPI.Controllers
             int maxX = 1000;
             int maxY = 1000;
 
-            int currentX = agent.LocationX;
-            int currentY = agent.LocationY;
+            int? currentX = agent.LocationX;
+            int? currentY = agent.LocationY;
 
             switch (direction)
             {

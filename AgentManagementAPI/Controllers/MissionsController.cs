@@ -20,11 +20,11 @@ namespace AgentManagementAPI.Controllers
     public class MissionsController : ControllerBase
     {
         private readonly DbContextAPI _dbContextAPI;
-        private readonly AgentsController _agentsController;
-        public MissionsController(DbContextAPI dbContextAPI, AgentsController agentsController)
+        private readonly ServiceMissions _serviceMissions;
+        public MissionsController(DbContextAPI dbContextAPI, ServiceMissions serviceMissionsr)
         {
             _dbContextAPI = dbContextAPI;
-            _agentsController = agentsController;
+            _serviceMissions = serviceMissionsr;
         }
 
 
@@ -45,7 +45,7 @@ namespace AgentManagementAPI.Controllers
             {
                 return NotFound();
             }
-
+            await _serviceMissions.UpdateTime(mission);
             return mission;
         }
 
@@ -91,7 +91,7 @@ namespace AgentManagementAPI.Controllers
                 status = StatusCodes.Status404NotFound;
                 return StatusCode(status, HttpUtils.Response(status, "mission not found"));
             }
-            mission.StatusMission = StatusMission.Assigned;
+            mission.StatusMission = StatusMission.Assigned.ToString();
            _dbContextAPI.Missions.Update(mission);
             await _dbContextAPI.SaveChangesAsync();
             status = StatusCodes.Status200OK;
@@ -100,59 +100,59 @@ namespace AgentManagementAPI.Controllers
 
 
         // עדכון מצב משימות
-        [HttpPost("update")]
-        public async Task<IActionResult> UpdateTimeLeft()
-        {
-            int status = StatusCodes.Status200OK;
-            var missions = await _dbContextAPI.Missions.ToListAsync();
+        //[HttpPost("update")]
+        //public async Task<IActionResult> UpdateTimeLeft()
+        //{
+        //    int status = StatusCodes.Status200OK;
+        //    var missions = await _dbContextAPI.Missions.ToListAsync();
 
-            foreach (var mission in missions)
-            {
-                if (mission.StatusMission == StatusMission.Assigned)
-                {
-                    var agent = await _dbContextAPI.Agents.FirstOrDefaultAsync(a => a.Id == mission.AgentID);
-                    var target = await _dbContextAPI.Targets.FirstOrDefaultAsync(t => t.Id == mission.TargetID);
+        //    foreach (var mission in missions)
+        //    {
+        //        if (mission.StatusMission == StatusMission.Assigned)
+        //        {
+        //            var agent = await _dbContextAPI.Agents.FirstOrDefaultAsync(a => a.Id == mission.AgentID);
+        //            var target = await _dbContextAPI.Targets.FirstOrDefaultAsync(t => t.Id == mission.TargetID);
 
-                    if (agent == null || target == null)
-                    {
-                        return StatusCode(StatusCodes.Status404NotFound, "Agent or Target not found for mission");
-                    }
+        //            if (agent == null || target == null)
+        //            {
+        //                return StatusCode(StatusCodes.Status404NotFound, "Agent or Target not found for mission");
+        //            }
 
-                    double distance = ServiceAgent.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
-                    var moveDirection = ServiceAgent.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY).ToString();
+        //            double distance = ServiceAgent.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
+        //            var moveDirection = ServiceAgent.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY).ToString();
 
-                    mission.TimeLeft = distance;
+        //            mission.TimeLeft = distance;
 
-                    if (string.IsNullOrEmpty(moveDirection))
-                    {
-                        agent.StatusAgent = StatusAgent.IinActivity;
-                        target.StatusTarget = StatusTarget.Eliminated;
-                        target.LocationX = -1;
-                        target.LocationY =-1;
+        //            if (string.IsNullOrEmpty(moveDirection))
+        //            {
+        //                agent.StatusAgent = StatusAgent.IinActivity;
+        //                target.StatusTarget = StatusTarget.Eliminated;
+        //                target.LocationX = -1;
+        //                target.LocationY =-1;
 
-                        mission.StatusMission = StatusMission.Finished;
+        //                mission.StatusMission = StatusMission.Finished;
 
-                        _dbContextAPI.Agents.Update(agent);
-                        _dbContextAPI.Targets.Update(target);
-                        _dbContextAPI.Missions.Update(mission);
-                    }
-                    else
-                    {
+        //                _dbContextAPI.Agents.Update(agent);
+        //                _dbContextAPI.Targets.Update(target);
+        //                _dbContextAPI.Missions.Update(mission);
+        //            }
+        //            else
+        //            {
 
-                        _agentsController.DirectionPosition(agent.Id, agent.Direction.ToString());
+        //                _agentsController.DirectionPosition(agent.Id, agent.Direction.ToString());
 
-                        _dbContextAPI.Agents.Update(agent);
-                    }
+        //                _dbContextAPI.Agents.Update(agent);
+        //            }
 
-                    await _dbContextAPI.SaveChangesAsync();
-                }
-            }
+        //            await _dbContextAPI.SaveChangesAsync();
+        //        }
+        //    }
 
-            return StatusCode(
-                status,
-                HttpUtils.Response(status, new { missions = missions })
-            );
-        }
+        //    return StatusCode(
+        //        status,
+        //        HttpUtils.Response(status, new { missions = missions })
+        //    );
+        //}
 
        
       

@@ -25,6 +25,6 @@ namespace AgentManagementAPI.Models
         
 
 
-        public StatusMission? StatusMission { get; set; }
+        public string? StatusMission { get; set; }
     }
 }
