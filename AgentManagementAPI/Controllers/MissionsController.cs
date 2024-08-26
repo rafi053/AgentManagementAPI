@@ -118,8 +118,8 @@ namespace AgentManagementAPI.Controllers
                         return StatusCode(StatusCodes.Status404NotFound, "Agent or Target not found for mission");
                     }
 
-                    double distance = Time.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
-                    var moveDirection = Time.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY).ToString();
+                    double distance = ServiceAgent.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
+                    var moveDirection = ServiceAgent.GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY).ToString();
 
                     mission.TimeLeft = distance;
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AgentManagementAPI.Utils;
 using AgentManagementAPI.Enums;
+using AgentManagementAPI.Services;
 
 namespace AgentManagementAPI.Controllers
 {
@@ -12,10 +13,14 @@ namespace AgentManagementAPI.Controllers
     [ApiController]
     public class TargetsController : ControllerBase
     {
-        public DbContextAPI _dbContextAPI;
-        public TargetsController(DbContextAPI dbContextAPI)
+        private readonly DbContextAPI _dbContextAPI;
+        private readonly ServiceTrget _serviceTrget;
+
+        public TargetsController(DbContextAPI dbContextAPI, ServiceTrget serviceTrget)
         {
             _dbContextAPI = dbContextAPI;
+            _serviceTrget = serviceTrget;
+            
         }
 
 
@@ -29,8 +34,7 @@ namespace AgentManagementAPI.Controllers
         {
             _dbContextAPI.Targets.Add(target);
             await _dbContextAPI.SaveChangesAsync();
-
-
+            
             return StatusCode(
                StatusCodes.Status200OK,
                new { Id = target.Id });
@@ -76,61 +80,80 @@ namespace AgentManagementAPI.Controllers
 
         // קביעת מיקום חדש
         [HttpPut("{id}/move")]
-        public async Task<IActionResult> DirectionPosition(int id, string directionStr)
+        public async Task<IActionResult> DirectionPosition(int id, [FromBody] string directionStr)
         {
             Target? target = await _dbContextAPI.Targets.FindAsync(id);
             if (target == null)
             {
                 return NotFound();
             }
-            // המרת ENUM לסטרינג
 
             if (!Enum.TryParse<Direction>(directionStr, true, out var direction))
             {
                 return BadRequest("Invalid direction value.");
             }
 
-            target.LocationX = 1000;
-            target.LocationY = 999;
+            int minX = 0;
+            int minY = 0;
+            int maxX = 1000;
+            int maxY = 1000;
 
-            
+            int currentX = target.LocationX;
+            int currentY = target.LocationY;
+
             switch (direction)
             {
                 case Direction.nw:
                     target.LocationX -= 1;
                     target.LocationY += 1;
+                    target.Direction = Direction.nw;
                     break;
                 case Direction.n:
                     target.LocationY += 1;
+                    target.Direction = Direction.n;
                     break;
                 case Direction.ne:
                     target.LocationX += 1;
                     target.LocationY += 1;
+                    target.Direction = Direction.ne;
                     break;
                 case Direction.w:
                     target.LocationX -= 1;
+                    target.Direction = Direction.w;
                     break;
                 case Direction.e:
                     target.LocationX += 1;
+                    target.Direction = Direction.e;
                     break;
                 case Direction.sw:
                     target.LocationX -= 1;
                     target.LocationY -= 1;
+                    target.Direction = Direction.sw;
                     break;
                 case Direction.s:
                     target.LocationY -= 1;
+                    target.Direction = Direction.s;
                     break;
                 case Direction.se:
                     target.LocationX += 1;
                     target.LocationY -= 1;
+                    target.Direction = Direction.se;
                     break;
                 default:
                     return BadRequest("Invalid direction value.");
             }
 
+            if (target.LocationX < minX || target.LocationX > maxX || target.LocationY < minY || target.LocationY > maxY)
+            {
+                target.LocationX = currentX;
+                target.LocationY = currentY;
+                return BadRequest("Can't be moved. Target outside the borders of the matrix.");
+            }
+
             await _dbContextAPI.SaveChangesAsync();
             return Ok(target);
         }
+
 
         // מחיקת מטרה
         [HttpDelete("{id}")]

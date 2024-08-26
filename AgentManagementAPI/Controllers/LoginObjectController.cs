@@ -12,7 +12,7 @@ namespace AgentManagementAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginObjectController : ControllerBase
     {
         private string GenerateToken(string userIP)
         {

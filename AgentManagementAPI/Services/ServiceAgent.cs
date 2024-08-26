@@ -8,16 +8,16 @@ using System.Reflection;
 
 namespace AgentManagementAPI.Services
 {
-    public class Time
+    public class ServiceAgent
     {
         private readonly DbContextAPI _dbContextAPI;
-        public Time(DbContextAPI dbContextAPI)
+        public ServiceAgent(DbContextAPI dbContextAPI)
         { 
             _dbContextAPI = dbContextAPI;
         }
        
 
-        //בדיקת המרחק בין הסוכן למטרה
+        //בדיקת המרחק 
         public static double GetDistance(int targetX, int targetY, int agentX, int agentY)
         {
             int x1 = targetX;
@@ -32,7 +32,7 @@ namespace AgentManagementAPI.Services
         }
 
         //חישוב זמן שנותר 
-        public async Task<ActionResult<IEnumerable<Target>>> TimeMission(Agent agent)
+        public  async Task<ActionResult<IEnumerable<Target>>> TimeMission(Agent agent)
         {
             var targets = await _dbContextAPI.Targets.ToListAsync();
             foreach (var target in targets)
@@ -40,7 +40,7 @@ namespace AgentManagementAPI.Services
                 var distance = GetDistance(target.LocationX, target.LocationY, agent.LocationX, agent.LocationY);
                 if (distance < 200)
                 {
-                    await CreateMissionAsync(agent, target);
+                    await CreateMission(agent, target);
                     return (new List<Target> { target });
                 }
             }
@@ -48,7 +48,7 @@ namespace AgentManagementAPI.Services
         }
 
         // יצירת משימה
-        private async Task CreateMissionAsync(Agent agent, Target target)
+        private async Task CreateMission(Agent agent, Target target)
         {
             Mission mission = new Mission
             {

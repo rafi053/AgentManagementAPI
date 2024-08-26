@@ -18,13 +18,15 @@ namespace AgentManagementAPI.Controllers
     public class AgentsController : ControllerBase 
     {
         private readonly DbContextAPI _dbContextAPI;
+        private readonly ServiceAgent _serviceAgent;
        
 
 
-        public AgentsController(DbContextAPI dbContextAPI, Time time)
+        public AgentsController(DbContextAPI dbContextAPI, ServiceAgent serviceAgent)
         {
             _dbContextAPI = dbContextAPI;
-           
+            _serviceAgent = serviceAgent;
+            
         }
 
 
@@ -77,65 +79,10 @@ namespace AgentManagementAPI.Controllers
             return Ok();
         }
 
-        // קביעת מיקום חדש
-        [HttpPut("{id}/move")]
-        public async Task<IActionResult> DirectionPosition(int id, string directionStr)
-        {
-            Agent? agent = await _dbContextAPI.Agents.FindAsync(id);
-            if (agent == null)
-            {
-                return NotFound();
-            }
-
-            if (!Enum.TryParse<Direction>(directionStr, true, out var direction))
-            {
-                return BadRequest("Invalid direction value.");
-            }
-
-            agent.LocationX = 1000;
-            agent.LocationY = 999;
-
-            // עיבוד הכיוון וביצוע עדכון למיקום
-            switch (direction)
-            {
-                case Direction.nw:
-                    agent.LocationX -= 1;
-                    agent.LocationY += 1;
-                    break;
-                case Direction.n:
-                    agent.LocationY += 1;
-                    break;
-                case Direction.ne:
-                    agent.LocationX += 1;
-                    agent.LocationY += 1;
-                    break;
-                case Direction.w:
-                    agent.LocationX -= 1;
-                    break;
-                case Direction.e:
-                    agent.LocationX += 1;
-                    break;
-                case Direction.sw:
-                    agent.LocationX -= 1;
-                    agent.LocationY -= 1;
-                    break;
-                case Direction.s:
-                    agent.LocationY -= 1;
-                    break;
-                case Direction.se:
-                    agent.LocationX += 1;
-                    agent.LocationY -= 1;
-                    break;
-                default:
-                    return BadRequest("Invalid direction value.");
-            }
-
-            await _dbContextAPI.SaveChangesAsync();
-            return Ok(agent);
-        }
-
+       
         // מחיקת סוכן
         [HttpDelete("{id}")]
+
         public async Task<IActionResult> DeleteEntity(int id)
         {
             Agent? agent = await this._dbContextAPI.Agents.FindAsync(id);
@@ -149,8 +96,83 @@ namespace AgentManagementAPI.Controllers
 
             return NoContent();
         }
+        
+       
+        [HttpPut("{id}/move")]
+        public async Task<IActionResult> DirectionPosition(int id, [FromBody] string directionStr)
+        {
+            Agent? agent = await _dbContextAPI.Agents.FindAsync(id);
+            if (agent == null)
+            {
+                return NotFound();
+            }
 
+            if (!Enum.TryParse<Direction>(directionStr, true, out var direction))
+            {
+                return BadRequest("Invalid direction value.");
+            }
 
+          
+            int minX = 0;
+            int minY = 0;
+            int maxX = 1000;
+            int maxY = 1000;
+
+            int currentX = agent.LocationX;
+            int currentY = agent.LocationY;
+
+            switch (direction)
+            {
+                case Direction.nw:
+                    agent.LocationX -= 1;
+                    agent.LocationY += 1;
+                    agent.Direction = Direction.nw;
+                    break;
+                case Direction.n:
+                    agent.LocationY += 1;
+                    agent.Direction = Direction.n;
+                    break;
+                case Direction.ne:
+                    agent.LocationX += 1;
+                    agent.LocationY += 1;
+                    agent.Direction = Direction.ne;
+                    break;
+                case Direction.w:
+                    agent.LocationX -= 1;
+                    agent.Direction = Direction.w;
+                    break;
+                case Direction.e:
+                    agent.LocationX += 1;
+                    agent.Direction = Direction.e;
+                    break;
+                case Direction.sw:
+                    agent.LocationX -= 1;
+                    agent.LocationY -= 1;
+                    agent.Direction = Direction.sw; 
+                    break;
+                case Direction.s:
+                    agent.LocationY -= 1;
+                    agent.Direction = Direction.s;
+                    break;
+                case Direction.se:
+                    agent.LocationX += 1;
+                    agent.LocationY -= 1;
+                    agent.Direction = Direction.se;
+                    break;
+                default:
+                    return BadRequest("Invalid direction value.");
+            }
+
+            if (agent.LocationX < minX || agent.LocationX > maxX || agent.LocationY < minY || agent.LocationY > maxY)
+            {
+              
+                agent.LocationX = currentX;
+                agent.LocationY = currentY;
+                return BadRequest("Can't be moved. Agent outside the borders of the matrix.");
+            }
+            await _dbContextAPI.SaveChangesAsync();
+            return Ok(agent);
+        }
 
     }
 }
