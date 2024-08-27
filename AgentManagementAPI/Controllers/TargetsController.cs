@@ -24,7 +24,7 @@ namespace AgentManagementAPI.Controllers
         }
 
 
-
+        
 
         // יצירת מטרה
         [HttpPost]
@@ -47,6 +47,31 @@ namespace AgentManagementAPI.Controllers
             return await _dbContextAPI.Targets.ToListAsync();
         }
 
+        // קבל את מספר המטרות
+        [HttpGet("count")]
+        public async Task<IActionResult> GetAllTargetsCount()
+        {
+            var targets = await _dbContextAPI.Targets.ToArrayAsync();
+
+            return Ok(targets.Length + 1);
+        }
+
+        // קבל את כל המטרות שחוסלו
+        [HttpGet("KilledCount")]
+        public async Task<IActionResult> GetKilledTargets()
+        {
+            int i = 0;
+            var targets = await _dbContextAPI.Targets.ToArrayAsync();
+            foreach (var target in targets)
+            {
+
+                if (target.StatusTarget == StatusTarget.Eliminated.ToString())
+                    i++;
+            }
+            return Ok(i);
+        }
+
+
         // הצג מטרה
         [HttpGet("{id}")]
         public async Task<ActionResult<Target>> GetEntity(int id)
@@ -60,7 +85,32 @@ namespace AgentManagementAPI.Controllers
             return target;
         }
 
-        //// קביעת מיקום התחלתי
+
+        // קבלת פרטי כל המטרות
+        [HttpGet("allDetails")]
+        public async Task<IActionResult> GetAllTargetsDetails()
+        {
+            List<string> detailsAlltargets = new List<string>();
+
+            var targets = await _dbContextAPI.Targets
+                .Include(a => a.Position)
+                .Include(a => a.LocationX)
+                .Include(a => a.LocationY)
+                .Include(a => a.StatusTarget)
+                .ToArrayAsync();
+
+            foreach (var target in targets)
+            {
+                string detailOneTarget = $"position: {target.Position}, location: ({target.LocationX}, {target.LocationY}), status: {target.StatusTarget}{Environment.NewLine}";
+                detailsAlltargets.Add(detailOneTarget);
+            }
+
+            return Ok(detailsAlltargets);
+        }
+
+
+
+        // קביעת מיקום התחלתי
         [HttpPut("{id}/pin")]
         public async Task<IActionResult> StartingPosition(int id, [FromBody] Location position)
         {

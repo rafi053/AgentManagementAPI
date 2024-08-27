@@ -27,6 +27,30 @@ namespace AgentManagementAPI.Controllers
             _serviceMissions = serviceMissionsr;
         }
 
+        // הצג את כל המשימות הפעילים
+        [HttpGet("active")]
+        public async Task<ActionResult<IEnumerable<Mission>>> GetAllEntitiesActive()
+        {
+            var activeAgents = await _dbContextAPI.Missions
+                .Where(agent => agent.StatusMission == "Assigned").ToListAsync();
+
+            if (activeAgents == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(activeAgents);
+        }
+
+        // קבל את מספר המשימות
+        [HttpGet("count")]
+        public async Task<IActionResult> GetAllTargetsCount()
+        {
+            var activeAgents = await _dbContextAPI.Missions.ToArrayAsync();
+
+            return Ok(activeAgents.Length + 1);
+        }
+
 
         // הצג את כל המשימות
         [HttpGet]
@@ -98,6 +122,7 @@ namespace AgentManagementAPI.Controllers
             return StatusCode(status, HttpUtils.Response(status, new { mission = mission }));
         }
 
+        
 
         // עדכון מצב משימות
         //[HttpPost("update")]
@@ -154,8 +179,8 @@ namespace AgentManagementAPI.Controllers
         //    );
         //}
 
-       
-      
+
+
 
     }
 }

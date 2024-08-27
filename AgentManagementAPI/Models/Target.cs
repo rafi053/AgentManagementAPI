@@ -22,7 +22,7 @@ namespace AgentManagementAPI.Models
         public Direction? Direction { get; set; }
         public string? Position { get; set; }
  
-        public StatusTarget? StatusTarget { get; set; }
+        public string? StatusTarget { get; set; }
 
         
     }

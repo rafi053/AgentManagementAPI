@@ -9,8 +9,7 @@ namespace AgentManagementAPI.Models
         [Key]
         public int Id { get; set; }
         [NotMapped]
-        public Agent? Agent { get; set; }
-
+        public List<Agent>? Agents { get; set; }
         public int AgentID { get; set; }
 
         [NotMapped]
@@ -23,7 +22,7 @@ namespace AgentManagementAPI.Models
         public double? TimeLeft { get; set; }
 
         
-
+        public Agent Agent { get; set; }
 
         public string? StatusMission { get; set; }
     }

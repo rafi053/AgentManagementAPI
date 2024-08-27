@@ -51,6 +51,23 @@ namespace AgentManagementAPI.Controllers
             return await _dbContextAPI.Agents.ToListAsync();
         }
 
+        // הצג את כל הסוכנים הפעילים
+        [HttpGet("active")]
+        public async Task<ActionResult<IEnumerable<Agent>>> GetAllEntitiesActive()
+        {
+            var activeAgents = await _dbContextAPI.Agents
+                .Where(agent => agent.StatusAgent == "IinActivity").ToListAsync();
+
+            if (activeAgents == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(activeAgents);
+        }
+
+        
+
         // הצג סוכן
         [HttpGet("{id}")]
         public async Task<ActionResult<Agent>> GetEntity(int id)
@@ -99,8 +116,30 @@ namespace AgentManagementAPI.Controllers
 
             return NoContent();
         }
-        
-       
+
+
+        // קבלת פרטי כל הסוכנים
+        [HttpGet("allDetails")]
+        public async Task<IActionResult> GetAllAgantDetails()
+        {
+            List<Agent> detailsAllAgants = new List<Agent>();
+
+
+
+            var Agants = await _dbContextAPI.Agents
+                .ToArrayAsync();
+
+            foreach (var agant in Agants)
+            {
+                Agent agantToAdd = new Agent();
+                detailsAllAgants.Add(agantToAdd);
+            }
+
+            return Ok(detailsAllAgants);
+        }
+
+
+
         [HttpPut("{id}/move")]
         public async Task<IActionResult> DirectionPosition(int id, [FromBody] string directionStr)
         {
@@ -175,6 +214,47 @@ namespace AgentManagementAPI.Controllers
             }
             await _dbContextAPI.SaveChangesAsync();
             return Ok(agent);
+        }
+
+        // קבלת מספר יחסי של סוכנים למטרות
+        [HttpGet("relative")]
+        public async Task<IActionResult> GetRelativeAgant()
+        {
+            var agants = await _dbContextAPI.Agents.ToArrayAsync();
+
+            var targets = await _dbContextAPI.Targets.ToArrayAsync();
+
+
+            return Ok($"{agants.Length + 1} : {targets.Length + 1}");
+        }
+
+
+        // קבלת מספר יחסי של סוכנים למשימות
+        [HttpGet("relativeAgant")]
+        public async Task<IActionResult> GetRelativeAgantRole()
+        {
+            int relevantAgants = 0;
+
+            int relevantMissions = 0;
+
+
+            var Missions = await _dbContextAPI.Missions.ToArrayAsync();
+
+            int i = 0;
+
+            foreach (var mission in Missions)
+            {
+
+                if (mission.StatusMission == "offer" || mission.StatusMission == "Assigned")
+                {
+                    relevantMissions++;
+                    relevantAgants += mission.Agents.Count + 1;
+                }
+                i++;
+            }
+
+
+            return Ok($"{relevantAgants} : {relevantMissions}");
         }
 
     }

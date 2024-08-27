@@ -20,9 +20,11 @@ namespace AgentManagementAPI.Models
         public int? LocationY { get; set; }
 
         public Direction? Direction { get; set; }
-        public StatusAgent? StatusAgent { get; set; }
+        public string? StatusAgent { get; set; }
 
         public Direction? DirectionAgent { get; set; }
+
+        
     }
    
 }

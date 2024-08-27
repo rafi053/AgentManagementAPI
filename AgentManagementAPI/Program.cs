@@ -2,6 +2,7 @@
 using AgentManagementAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using AgentManagementAPI.Services;
+using AgentManagementAPI.Middlewares.Global;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,6 +26,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<GlobalLoggingMiddleware>();
+
+
+app.UseWhen(
+    context =>
+        context.Request.Path.StartsWithSegments("/api/attacks"),
+    appBuilder =>
+    {
+        // appBuilder.UseMiddleware<JwtValidationMiddleware>();
+        appBuilder.UseMiddleware<GlobalLoggingMiddleware>();
+    });
 app.UseWebSockets();
 
 app.UseHttpsRedirection();
